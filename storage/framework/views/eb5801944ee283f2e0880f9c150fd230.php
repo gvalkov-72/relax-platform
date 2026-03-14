@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 
-    <title>@yield('title', 'Relax Platform')</title>
+    <title><?php echo $__env->yieldContent('title', 'Relax Platform'); ?></title>
 
     <!-- Bootstrap CSS (от CDN) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <!-- Допълнителни CSS -->
-    @stack('css')
+    <?php echo $__env->yieldPushContent('css'); ?>
     <style>
         body {
             background: #0f172a;
@@ -40,13 +40,13 @@
 </head>
 
 <body>
-    @include('partials.header')
+    <?php echo $__env->make('partials.header', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
     <main class="py-4">
-        @yield('content')
+        <?php echo $__env->yieldContent('content'); ?>
     </main>
 
-    @include('partials.footer')
+    <?php echo $__env->make('partials.footer', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
     <!-- jQuery (необходим за Bootstrap 4, но Bootstrap 5 не изисква jQuery) -->
     <!-- Ако ползваш Bootstrap 5, махни jQuery -->
@@ -61,7 +61,8 @@
     <!-- Алтернативно за Bootstrap 5 (без jQuery) -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
 
-    @stack('js')
+    <?php echo $__env->yieldPushContent('js'); ?>
 </body>
 
 </html>
+<?php /**PATH D:\xampp\htdocs\relax-platform\resources\views/layouts/front.blade.php ENDPATH**/ ?>

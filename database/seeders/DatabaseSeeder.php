@@ -14,7 +14,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RolesSeeder::class,
             //LanguageSeeder::class,
-            //PageSeeder::class,
             //AudioSeeder::class,
             //BrainwavePresetSeeder::class,
         ]);

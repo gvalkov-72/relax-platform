@@ -10,9 +10,15 @@ return new class extends Migration
     {
         Schema::create('pages', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique();
-            $table->string('title');
+            $table->foreignId('parent_id')
+                ->nullable()
+                ->constrained('pages')
+                ->nullOnDelete();
+            $table->string('template')->default('default');
+            $table->boolean('show_in_menu')->default(true);
+            $table->boolean('is_home')->default(false);
             $table->boolean('is_active')->default(true);
+            $table->integer('sort_order')->default(0);
             $table->timestamps();
         });
     }

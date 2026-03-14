@@ -67,4 +67,20 @@ class MeditationBuilderController extends Controller
             ->route('admin.meditation.builder', $meditationId)
             ->with('success', 'Item removed');
     }
+
+    public function updatePosition(Request $request)
+    {
+
+        $item = MeditationItem::findOrFail($request->id);
+
+        $item->start_time = $request->start_time;
+
+        $item->save();
+
+        return response()->json([
+            'status' => 'ok'
+        ]);
+
+    }
+
 }

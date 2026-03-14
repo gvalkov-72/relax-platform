@@ -3,30 +3,24 @@
 @section('title', 'Meditations')
 
 @section('content_header')
-    <h1>Meditations</h1>
+<h1>Meditations</h1>
 @stop
 
 @section('content')
 
 <a href="{{ route('admin.meditations.create') }}" class="btn btn-primary mb-3">
-    Create Meditation
+Create Meditation
 </a>
 
-@if(session('success'))
-<div class="alert alert-success">
-    {{ session('success') }}
-</div>
-@endif
-
-<table class="table table-bordered">
+<table class="table table-bordered table-striped">
 
 <thead>
 <tr>
 <th>ID</th>
 <th>Name</th>
 <th>Duration</th>
-<th>Status</th>
-<th width="180">Actions</th>
+<th>Active</th>
+<th width="220">Actions</th>
 </tr>
 </thead>
 
@@ -44,26 +38,32 @@
 
 <td>
 @if($meditation->is_active)
-<span class="badge bg-success">Active</span>
+<span class="badge badge-success">Yes</span>
 @else
-<span class="badge bg-danger">Disabled</span>
+<span class="badge badge-danger">No</span>
 @endif
 </td>
 
 <td>
 
-<a href="{{ route('admin.meditations.edit',$meditation) }}"
-class="btn btn-sm btn-warning">Edit</a>
+<a href="{{ route('admin.meditations.edit',$meditation->id) }}"
+class="btn btn-warning btn-sm">
+Edit
+</a>
 
-<form action="{{ route('admin.meditations.destroy',$meditation) }}"
-method="POST"
-style="display:inline">
+<a href="{{ route('admin.meditation.builder',$meditation->id) }}"
+class="btn btn-info btn-sm">
+Builder
+</a>
+
+<form method="POST"
+action="{{ route('admin.meditations.destroy',$meditation->id) }}"
+style="display:inline-block">
 
 @csrf
 @method('DELETE')
 
-<button class="btn btn-sm btn-danger"
-onclick="return confirm('Delete meditation?')">
+<button class="btn btn-danger btn-sm">
 Delete
 </button>
 
@@ -78,7 +78,5 @@ Delete
 </tbody>
 
 </table>
-
-{{ $meditations->links() }}
 
 @stop

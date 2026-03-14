@@ -10,9 +10,11 @@ return new class extends Migration
     {
         Schema::create('languages', function (Blueprint $table) {
             $table->id();
-            $table->string('code', 5)->unique();
             $table->string('name');
+            $table->string('code', 5)->unique();
             $table->boolean('is_default')->default(false);
+            $table->boolean('is_active')->default(true);
+            $table->integer('sort_order')->default(0);
             $table->timestamps();
         });
     }

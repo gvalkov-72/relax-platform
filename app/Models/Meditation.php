@@ -20,4 +20,10 @@ class Meditation extends Model
     {
         return $this->hasMany(MeditationItem::class);
     }
+
+    public function tracks()
+    {
+        return $this->hasMany(MeditationTrack::class)
+            ->orderBy('position');
+    }
 }

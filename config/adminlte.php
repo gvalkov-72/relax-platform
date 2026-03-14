@@ -8,8 +8,8 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'title' => 'Relax Admin',
-    'title_prefix' => '',
+    'title'         => 'Relax Admin',
+    'title_prefix'  => '',
     'title_postfix' => '',
 
 
@@ -19,10 +19,10 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'logo' => '<b>Relax</b>Admin',
-    'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
+    'logo'          => '<b>Relax</b>Admin',
+    'logo_img'      => 'vendor/adminlte/dist/img/AdminLTELogo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
-    'logo_img_alt' => 'Admin Logo',
+    'logo_img_alt'  => 'Admin Logo',
 
 
     /*
@@ -32,8 +32,8 @@ return [
     */
 
     'layout_fixed_sidebar' => true,
-    'layout_fixed_navbar' => true,
-    'layout_fixed_footer' => false,
+    'layout_fixed_navbar'  => true,
+    'layout_fixed_footer'  => false,
 
 
     /*
@@ -46,9 +46,9 @@ return [
 
     'dashboard_url' => 'admin/dashboard',
 
-    'login_url' => 'login',
-    'logout_url' => 'logout',
-    'register_url' => null,
+    'login_url'     => 'login',
+    'logout_url'    => 'logout',
+    'register_url'  => null,
 
 
     /*
@@ -57,8 +57,8 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'sidebar_mini' => 'lg',
-    'sidebar_nav_accordion' => true,
+    'sidebar_mini'           => 'lg',
+    'sidebar_nav_accordion'  => true,
 
 
     /*
@@ -69,60 +69,115 @@ return [
 
     'menu' => [
 
+        /*
+    |--------------------------------------------------------------------------
+    | SYSTEM
+    |--------------------------------------------------------------------------
+    */
+
         [
-            'text' => 'Dashboard',
+            'text'  => 'Dashboard',
             'route' => 'admin.dashboard',
             'icon'  => 'fas fa-home',
         ],
 
         [
-            'text' => 'Users',
-            'route' => 'admin.users.index',
-            'icon'  => 'fas fa-users',
-            'can'   => 'manage users',
+            'text'   => 'Users',
+            'route'  => 'admin.users.index',
+            'icon'   => 'fas fa-users',
+            'can'    => 'manage users',
             'active' => ['admin/users*'],
         ],
 
         [
-            'text' => 'Roles',
-            'route' => 'admin.roles.index',
-            'icon'  => 'fas fa-user-shield',
-            'can'   => 'manage roles',
+            'text'   => 'Roles',
+            'route'  => 'admin.roles.index',
+            'icon'   => 'fas fa-user-shield',
+            'can'    => 'manage roles',
             'active' => ['admin/roles*'],
         ],
 
         [
-            'text' => 'Permissions',
-            'route' => 'admin.permissions.index',
-            'icon'  => 'fas fa-key',
-            'can'   => 'manage permissions',
+            'text'   => 'Permissions',
+            'route'  => 'admin.permissions.index',
+            'icon'   => 'fas fa-key',
+            'can'    => 'manage permissions',
             'active' => ['admin/permissions*'],
         ],
 
+
+        /*
+    |--------------------------------------------------------------------------
+    | CONTENT
+    |--------------------------------------------------------------------------
+    */
+
         ['header' => 'CONTENT'],
 
+        // ----- НОВИ МОДУЛИ -----
         [
-            'text' => 'Meditations',
-            'route' => 'admin.meditations.index',
-            'icon'  => 'fas fa-brain',
-            'can'   => 'manage meditations',
-            'active' => ['admin/meditations*'],
+            'text'   => 'Languages',
+            'route'  => 'admin.languages.index',
+            'icon'   => 'fas fa-language',
+            'can'    => 'manage languages',
+            'active' => ['admin/languages*'],
         ],
 
         [
-            'text' => 'Audio Files',
-            'route' => 'admin.audio.index',
-            'icon'  => 'fas fa-music',
-            'can'   => 'manage audio',
+            'text'   => 'Pages',
+            'route'  => 'admin.pages.index',
+            'icon'   => 'fas fa-file-alt',
+            'can'    => 'manage pages',
+            'active' => ['admin/pages*'],
+        ],
+
+        [
+            'text'   => 'Sections',
+            'route'  => 'admin.sections.index',
+            'icon'   => 'fas fa-layer-group',
+            'can'    => 'manage sections',
+            'active' => ['admin/sections*'],
+        ],
+        // -----------------------
+
+        [
+            'text' => 'Meditations',
+            'icon' => 'fas fa-brain',
+            'can'  => 'manage meditations',
+            'submenu' => [
+
+                [
+                    'text'   => 'All Meditations',
+                    'route'  => 'admin.meditations.index',
+                    'icon'   => 'fas fa-list',
+                    'active' => ['admin/meditations*'],
+                ],
+
+            ],
+        ],
+
+        [
+            'text'   => 'Audio Files',
+            'route'  => 'admin.audio.index',
+            'icon'   => 'fas fa-music',
+            'can'    => 'manage audio',
             'active' => ['admin/audio*'],
         ],
 
         [
-            'text' => 'Brainwave Presets',
-            'route' => 'admin.brainwaves.index',
-            'icon'  => 'fas fa-wave-square',
-            'can'   => 'manage brainwaves',
+            'text'   => 'Brainwave Presets',
+            'route'  => 'admin.brainwaves.index',
+            'icon'   => 'fas fa-wave-square',
+            'can'    => 'manage brainwaves',
             'active' => ['admin/brainwaves*'],
+        ],
+
+        [
+            'text'   => 'AI Assistant',
+            'route'  => 'admin.ai.assistant',
+            'icon'   => 'fas fa-robot',
+            'can'    => 'manage ai',
+            'active' => ['admin/ai-assistant*'],
         ],
 
     ],
@@ -135,9 +190,11 @@ return [
     */
 
     'filters' => [
+
         JeroenNoten\LaravelAdminLte\Menu\Filters\HrefFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\ActiveFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\ClassesFilter::class,
+
     ],
 
 

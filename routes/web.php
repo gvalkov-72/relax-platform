@@ -2,29 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Front\MeditationController;
-
-/*
-|--------------------------------------------------------------------------
-| FRONTEND
-|--------------------------------------------------------------------------
-*/
-
-Route::get('/', function () {
-    return view('pages.home');
-})->name('home');
-
-Route::get('/meditation', [MeditationController::class, 'index'])
-    ->name('meditation');
-
+use App\Models\Language;
 
 /*
 |--------------------------------------------------------------------------
 | DASHBOARD (Laravel Breeze compatibility)
 |--------------------------------------------------------------------------
-|
-| Breeze очаква route('dashboard') след login.
-| Ние го пренасочваме към admin dashboard.
-|
 */
 
 Route::get('/dashboard', function () {
@@ -34,19 +17,63 @@ Route::get('/dashboard', function () {
 
 /*
 |--------------------------------------------------------------------------
+| AUTO-REDIRECT TO DEFAULT LANGUAGE
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/', function () {
+    $defaultLanguage = Language::where('is_default', true)->first();
+    
+    if ($defaultLanguage) {
+        return redirect('/' . $defaultLanguage->code);
+    }
+    
+    // Ако няма default език, пренасочваме към /bg (твърд код)
+    return redirect('/bg');
+})->name('root');
+
+
+/*
+|--------------------------------------------------------------------------
 | ADMIN ROUTES
 |--------------------------------------------------------------------------
-|
-| Всички admin routes са изнесени в routes/admin.php
-| и използват admin middleware group.
-|
 */
 
 Route::prefix('admin')
     ->middleware('admin')
     ->group(function () {
-
         require __DIR__.'/admin.php';
+    });
+
+
+/*
+|--------------------------------------------------------------------------
+| FRONTEND Многоезични маршрути
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('{lang}')
+    ->middleware('setLanguage')
+    ->group(function () {
+
+        // Начална страница за даден език
+        Route::get('/', function ($lang) {
+            $language = Language::where('code', $lang)->first();
+            return view('pages.home', compact('language'));
+        })->name('home');
+
+        // Медитация
+        Route::get('/meditation', [MeditationController::class, 'index'])
+            ->name('meditation');
+
+        // Динамични страници от CMS
+        Route::get('/{slug}', function ($lang, $slug) {
+            $language = Language::where('code', $lang)->first();
+            $page = \App\Models\PageTranslation::where('slug', $slug)
+                ->where('language_id', $language->id)
+                ->firstOrFail();
+            return view('pages.dynamic', compact('page', 'language'));
+        })->name('page.show');
 
     });
 
