@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Edit Section')
+@section('title', __('sections.title.edit'))
 
 @section('content_header')
-    <h1>Edit Section</h1>
+    <h1>{{ __('sections.title.edit') }}</h1>
 @stop
 
 @section('content')
@@ -13,13 +13,12 @@
                 @csrf
                 @method('PUT')
 
-                <!-- Основен тип на секцията -->
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="type">Section Type *</label>
+                            <label for="type">{{ __('sections.label.type') }}</label>
                             <select name="type" id="type" class="form-control" required>
-                                <option value="">Select type</option>
+                                <option value="">{{ __('sections.placeholder.select_type') }}</option>
                                 @foreach($types as $value => $label)
                                     <option value="{{ $value }}" {{ $section->type == $value ? 'selected' : '' }}>{{ $label }}</option>
                                 @endforeach
@@ -28,7 +27,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="sort_order">Sort Order</label>
+                            <label for="sort_order">{{ __('sections.label.sort_order') }}</label>
                             <input type="number" name="sort_order" id="sort_order" class="form-control" value="{{ $section->sort_order }}">
                         </div>
                     </div>
@@ -36,13 +35,12 @@
 
                 <div class="form-check mb-3">
                     <input type="checkbox" name="is_active" id="is_active" class="form-check-input" value="1" {{ $section->is_active ? 'checked' : '' }}>
-                    <label class="form-check-label" for="is_active">Active</label>
+                    <label class="form-check-label" for="is_active">{{ __('sections.label.active') }}</label>
                 </div>
 
                 <hr>
-                <h4>Translations</h4>
+                <h4>{{ __('sections.header.translations') }}</h4>
 
-                <!-- Language tabs -->
                 <ul class="nav nav-tabs" id="languageTabs" role="tablist">
                     @foreach($languages as $lang)
                         <li class="nav-item">
@@ -59,7 +57,6 @@
                     @endforeach
                 </ul>
 
-                <!-- Tab content -->
                 <div class="tab-content mt-3">
                     @foreach($languages as $lang)
                         @php
@@ -73,9 +70,8 @@
                              role="tabpanel"
                              aria-labelledby="{{ $lang->code }}-tab">
 
-                            <!-- Общи полета (title, subtitle) -->
                             <div class="form-group">
-                                <label>Title</label>
+                                <label>{{ __('sections.label.title') }}</label>
                                 <input type="text"
                                        name="{{ $lang->code }}[title]"
                                        class="form-control"
@@ -83,17 +79,17 @@
                             </div>
 
                             <div class="form-group">
-                                <label>Subtitle</label>
+                                <label>{{ __('sections.label.subtitle') }}</label>
                                 <input type="text"
                                        name="{{ $lang->code }}[subtitle]"
                                        class="form-control"
                                        value="{{ old($lang->code . '.subtitle', $subtitle) }}">
                             </div>
 
-                            <!-- Hero -->
+                            {{-- Hero --}}
                             <div class="type-specific type-hero" style="display:none;">
                                 <div class="form-group">
-                                    <label>Hero Image</label>
+                                    <label>{{ __('sections.hero.image') }}</label>
                                     @if(isset($data['image']))
                                         <div class="mb-2">
                                             <img src="{{ Storage::url($data['image']) }}" style="max-width:200px; max-height:150px;" class="img-thumbnail">
@@ -102,16 +98,17 @@
                                     <input type="file"
                                            name="{{ $lang->code }}[image]"
                                            class="form-control-file">
+                                    <small class="text-muted">{{ __('sections.label.replace_image') }}</small>
                                 </div>
                                 <div class="form-group">
-                                    <label>Button Text</label>
+                                    <label>{{ __('sections.hero.button_text') }}</label>
                                     <input type="text"
                                            name="{{ $lang->code }}[button_text]"
                                            class="form-control"
                                            value="{{ old($lang->code . '.button_text', $data['button_text'] ?? '') }}">
                                 </div>
                                 <div class="form-group">
-                                    <label>Button URL</label>
+                                    <label>{{ __('sections.hero.button_url') }}</label>
                                     <input type="text"
                                            name="{{ $lang->code }}[button_url]"
                                            class="form-control"
@@ -119,20 +116,20 @@
                                 </div>
                             </div>
 
-                            <!-- Features -->
+                            {{-- Features --}}
                             <div class="type-specific type-features" style="display:none;">
                                 <div class="form-group">
-                                    <label>Features</label>
-                                    <small class="text-muted d-block mb-2">Add features with icon, title and description.</small>
+                                    <label>{{ __('sections.features.label') }}</label>
+                                    <small class="text-muted d-block mb-2">{{ __('sections.features.helper') }}</small>
                                     <div class="features-repeater">
                                         <table class="table table-bordered" id="features-table-{{ $lang->code }}">
                                             <thead>
-                                                <tr>
-                                                    <th>Icon (FontAwesome class)</th>
-                                                    <th>Title</th>
-                                                    <th>Description</th>
+                                                 <tr>
+                                                    <th>{{ __('sections.features.table.icon') }}</th>
+                                                    <th>{{ __('sections.features.table.title') }}</th>
+                                                    <th>{{ __('sections.features.table.description') }}</th>
                                                     <th width="50"></th>
-                                                </tr>
+                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @if(isset($data['features']) && is_array($data['features']))
@@ -148,26 +145,26 @@
                                             </tbody>
                                         </table>
                                         <button type="button" class="btn btn-sm btn-success add-feature" data-lang="{{ $lang->code }}">
-                                            <i class="fas fa-plus"></i> Add Feature
+                                            <i class="fas fa-plus"></i> {{ __('sections.button.add_feature') }}
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Testimonials -->
+                            {{-- Testimonials --}}
                             <div class="type-specific type-testimonials" style="display:none;">
                                 <div class="form-group">
-                                    <label>Testimonials</label>
-                                    <small class="text-muted d-block mb-2">Add testimonials with author name, text and optional image.</small>
+                                    <label>{{ __('sections.testimonials.label') }}</label>
+                                    <small class="text-muted d-block mb-2">{{ __('sections.testimonials.helper') }}</small>
                                     <div class="testimonials-repeater">
                                         <table class="table table-bordered" id="testimonials-table-{{ $lang->code }}">
                                             <thead>
-                                                <tr>
-                                                    <th>Author</th>
-                                                    <th>Text</th>
-                                                    <th>Image</th>
+                                                 <tr>
+                                                    <th>{{ __('sections.testimonials.table.author') }}</th>
+                                                    <th>{{ __('sections.testimonials.table.text') }}</th>
+                                                    <th>{{ __('sections.testimonials.table.image') }}</th>
                                                     <th width="50"></th>
-                                                </tr>
+                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @if(isset($data['testimonials']) && is_array($data['testimonials']))
@@ -190,30 +187,30 @@
                                             </tbody>
                                         </table>
                                         <button type="button" class="btn btn-sm btn-success add-testimonial" data-lang="{{ $lang->code }}">
-                                            <i class="fas fa-plus"></i> Add Testimonial
+                                            <i class="fas fa-plus"></i> {{ __('sections.button.add_testimonial') }}
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- CTA -->
+                            {{-- CTA --}}
                             <div class="type-specific type-cta" style="display:none;">
                                 <div class="form-group">
-                                    <label>Button Text</label>
+                                    <label>{{ __('sections.cta.button_text') }}</label>
                                     <input type="text"
                                            name="{{ $lang->code }}[button_text]"
                                            class="form-control"
                                            value="{{ old($lang->code . '.button_text', $data['button_text'] ?? '') }}">
                                 </div>
                                 <div class="form-group">
-                                    <label>Button URL</label>
+                                    <label>{{ __('sections.cta.button_url') }}</label>
                                     <input type="text"
                                            name="{{ $lang->code }}[button_url]"
                                            class="form-control"
                                            value="{{ old($lang->code . '.button_url', $data['button_url'] ?? '') }}">
                                 </div>
                                 <div class="form-group">
-                                    <label>Background Image (optional)</label>
+                                    <label>{{ __('sections.cta.background_image') }}</label>
                                     @if(isset($data['image']))
                                         <div class="mb-2">
                                             <img src="{{ Storage::url($data['image']) }}" style="max-width:200px; max-height:150px;" class="img-thumbnail">
@@ -225,25 +222,23 @@
                                 </div>
                             </div>
 
-                            <!-- Text Block -->
-                            <div class="type-specific type-text" style="display:none;">
-                                <!-- nothing extra -->
-                            </div>
+                            {{-- Text Block --}}
+                            <div class="type-specific type-text" style="display:none;"></div>
 
-                            <!-- How It Works -->
+                            {{-- How It Works --}}
                             <div class="type-specific type-how-it-works" style="display:none;">
                                 <div class="form-group">
-                                    <label>Steps</label>
-                                    <small class="text-muted d-block mb-2">Add steps with title, description and optional icon.</small>
+                                    <label>{{ __('sections.how_it_works.label') }}</label>
+                                    <small class="text-muted d-block mb-2">{{ __('sections.how_it_works.helper') }}</small>
                                     <div class="steps-repeater">
                                         <table class="table table-bordered" id="steps-table-{{ $lang->code }}">
                                             <thead>
-                                                <tr>
-                                                    <th>Title</th>
-                                                    <th>Description</th>
-                                                    <th>Icon</th>
+                                                 <tr>
+                                                    <th>{{ __('sections.how_it_works.table.title') }}</th>
+                                                    <th>{{ __('sections.how_it_works.table.description') }}</th>
+                                                    <th>{{ __('sections.how_it_works.table.icon') }}</th>
                                                     <th width="50"></th>
-                                                </tr>
+                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @if(isset($data['steps']) && is_array($data['steps']))
@@ -259,27 +254,27 @@
                                             </tbody>
                                         </table>
                                         <button type="button" class="btn btn-sm btn-success add-step" data-lang="{{ $lang->code }}">
-                                            <i class="fas fa-plus"></i> Add Step
+                                            <i class="fas fa-plus"></i> {{ __('sections.button.add_step') }}
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Team -->
+                            {{-- Team --}}
                             <div class="type-specific type-team" style="display:none;">
                                 <div class="form-group">
-                                    <label>Team Members</label>
-                                    <small class="text-muted d-block mb-2">Add team members with name, position, bio and photo.</small>
+                                    <label>{{ __('sections.team.label') }}</label>
+                                    <small class="text-muted d-block mb-2">{{ __('sections.team.helper') }}</small>
                                     <div class="team-repeater">
                                         <table class="table table-bordered" id="team-table-{{ $lang->code }}">
                                             <thead>
-                                                <tr>
-                                                    <th>Name</th>
-                                                    <th>Position</th>
-                                                    <th>Bio</th>
-                                                    <th>Photo</th>
+                                                 <tr>
+                                                    <th>{{ __('sections.team.table.name') }}</th>
+                                                    <th>{{ __('sections.team.table.position') }}</th>
+                                                    <th>{{ __('sections.team.table.bio') }}</th>
+                                                    <th>{{ __('sections.team.table.photo') }}</th>
                                                     <th width="50"></th>
-                                                </tr>
+                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @if(isset($data['members']) && is_array($data['members']))
@@ -303,25 +298,25 @@
                                             </tbody>
                                         </table>
                                         <button type="button" class="btn btn-sm btn-success add-team" data-lang="{{ $lang->code }}">
-                                            <i class="fas fa-plus"></i> Add Member
+                                            <i class="fas fa-plus"></i> {{ __('sections.button.add_member') }}
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- FAQ -->
+                            {{-- FAQ --}}
                             <div class="type-specific type-faq" style="display:none;">
                                 <div class="form-group">
-                                    <label>FAQ Items</label>
-                                    <small class="text-muted d-block mb-2">Add questions and answers.</small>
+                                    <label>{{ __('sections.faq.label') }}</label>
+                                    <small class="text-muted d-block mb-2">{{ __('sections.faq.helper') }}</small>
                                     <div class="faq-repeater">
                                         <table class="table table-bordered" id="faq-table-{{ $lang->code }}">
                                             <thead>
-                                                <tr>
-                                                    <th>Question</th>
-                                                    <th>Answer</th>
+                                                 <tr>
+                                                    <th>{{ __('sections.faq.table.question') }}</th>
+                                                    <th>{{ __('sections.faq.table.answer') }}</th>
                                                     <th width="50"></th>
-                                                </tr>
+                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @if(isset($data['faq_items']) && is_array($data['faq_items']))
@@ -336,27 +331,27 @@
                                             </tbody>
                                         </table>
                                         <button type="button" class="btn btn-sm btn-success add-faq" data-lang="{{ $lang->code }}">
-                                            <i class="fas fa-plus"></i> Add FAQ
+                                            <i class="fas fa-plus"></i> {{ __('sections.button.add_faq') }}
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Portfolio / Gallery -->
+                            {{-- Portfolio --}}
                             <div class="type-specific type-portfolio" style="display:none;">
                                 <div class="form-group">
-                                    <label>Portfolio Items</label>
-                                    <small class="text-muted d-block mb-2">Add portfolio items with title, description, link and image.</small>
+                                    <label>{{ __('sections.portfolio.label') }}</label>
+                                    <small class="text-muted d-block mb-2">{{ __('sections.portfolio.helper') }}</small>
                                     <div class="portfolio-repeater">
                                         <table class="table table-bordered" id="portfolio-table-{{ $lang->code }}">
                                             <thead>
-                                                <tr>
-                                                    <th>Title</th>
-                                                    <th>Description</th>
-                                                    <th>Link</th>
-                                                    <th>Image</th>
+                                                 <tr>
+                                                    <th>{{ __('sections.portfolio.table.title') }}</th>
+                                                    <th>{{ __('sections.portfolio.table.description') }}</th>
+                                                    <th>{{ __('sections.portfolio.table.link') }}</th>
+                                                    <th>{{ __('sections.portfolio.table.image') }}</th>
                                                     <th width="50"></th>
-                                                </tr>
+                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @if(isset($data['items']) && is_array($data['items']))
@@ -380,28 +375,28 @@
                                             </tbody>
                                         </table>
                                         <button type="button" class="btn btn-sm btn-success add-portfolio" data-lang="{{ $lang->code }}">
-                                            <i class="fas fa-plus"></i> Add Item
+                                            <i class="fas fa-plus"></i> {{ __('sections.button.add_item') }}
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Pricing -->
+                            {{-- Pricing --}}
                             <div class="type-specific type-pricing" style="display:none;">
                                 <div class="form-group">
-                                    <label>Pricing Plans</label>
-                                    <small class="text-muted d-block mb-2">Add pricing plans with name, price, features list (comma separated) and button.</small>
+                                    <label>{{ __('sections.pricing.label') }}</label>
+                                    <small class="text-muted d-block mb-2">{{ __('sections.pricing.helper') }}</small>
                                     <div class="pricing-repeater">
                                         <table class="table table-bordered" id="pricing-table-{{ $lang->code }}">
                                             <thead>
-                                                <tr>
-                                                    <th>Plan Name</th>
-                                                    <th>Price</th>
-                                                    <th>Features (comma separated)</th>
-                                                    <th>Button Text</th>
-                                                    <th>Button URL</th>
+                                                 <tr>
+                                                    <th>{{ __('sections.pricing.table.plan_name') }}</th>
+                                                    <th>{{ __('sections.pricing.table.price') }}</th>
+                                                    <th>{{ __('sections.pricing.table.features') }}</th>
+                                                    <th>{{ __('sections.pricing.table.button_text') }}</th>
+                                                    <th>{{ __('sections.pricing.table.button_url') }}</th>
                                                     <th width="50"></th>
-                                                </tr>
+                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @if(isset($data['plans']) && is_array($data['plans']))
@@ -419,21 +414,19 @@
                                             </tbody>
                                         </table>
                                         <button type="button" class="btn btn-sm btn-success add-pricing" data-lang="{{ $lang->code }}">
-                                            <i class="fas fa-plus"></i> Add Plan
+                                            <i class="fas fa-plus"></i> {{ __('sections.button.add_plan') }}
                                         </button>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     @endforeach
                 </div>
 
-                <hr>
                 <button type="submit" class="btn btn-success">
-                    <i class="fas fa-save"></i> Update Section
+                    <i class="fas fa-save"></i> {{ __('sections.button.update') }}
                 </button>
-                <a href="{{ route('admin.sections.index') }}" class="btn btn-secondary">Cancel</a>
+                <a href="{{ route('admin.sections.index') }}" class="btn btn-secondary">{{ __('sections.button.cancel') }}</a>
             </form>
         </div>
     </div>
@@ -442,7 +435,6 @@
 @section('js')
 <script>
     $(document).ready(function() {
-        // Показване на специфичните полета според избрания тип
         $('#type').on('change', function() {
             var selectedType = $(this).val();
             $('.type-specific').hide();
@@ -451,128 +443,103 @@
             }
         }).trigger('change');
 
-        // Функции за добавяне на редове (същите като в create.blade.php)
         function addFeatureRow(lang) {
             var index = $('#features-table-' + lang + ' tbody tr').length;
             var row = `
-                <tr>
+                 <tr>
                     <td><input type="text" name="${lang}[features][${index}][icon]" class="form-control" placeholder="e.g., brain"></td>
                     <td><input type="text" name="${lang}[features][${index}][title]" class="form-control"></td>
                     <td><textarea name="${lang}[features][${index}][description]" class="form-control"></textarea></td>
                     <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                </tr>
+                 </tr>
             `;
             $('#features-table-' + lang + ' tbody').append(row);
         }
-
         function addTestimonialRow(lang) {
             var index = $('#testimonials-table-' + lang + ' tbody tr').length;
             var row = `
-                <tr>
+                 <tr>
                     <td><input type="text" name="${lang}[testimonials][${index}][author]" class="form-control"></td>
                     <td><textarea name="${lang}[testimonials][${index}][text]" class="form-control"></textarea></td>
                     <td><input type="file" name="${lang}[testimonials][${index}][image]" class="form-control-file"></td>
                     <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                </tr>
+                 </tr>
             `;
             $('#testimonials-table-' + lang + ' tbody').append(row);
         }
-
         function addStepRow(lang) {
             var index = $('#steps-table-' + lang + ' tbody tr').length;
             var row = `
-                <tr>
+                 <tr>
                     <td><input type="text" name="${lang}[steps][${index}][title]" class="form-control"></td>
                     <td><textarea name="${lang}[steps][${index}][description]" class="form-control"></textarea></td>
                     <td><input type="text" name="${lang}[steps][${index}][icon]" class="form-control" placeholder="e.g., arrow-right"></td>
                     <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                </tr>
+                 </tr>
             `;
             $('#steps-table-' + lang + ' tbody').append(row);
         }
-
         function addTeamRow(lang) {
             var index = $('#team-table-' + lang + ' tbody tr').length;
             var row = `
-                <tr>
+                 <tr>
                     <td><input type="text" name="${lang}[members][${index}][name]" class="form-control"></td>
                     <td><input type="text" name="${lang}[members][${index}][position]" class="form-control"></td>
                     <td><textarea name="${lang}[members][${index}][bio]" class="form-control"></textarea></td>
                     <td><input type="file" name="${lang}[members][${index}][image]" class="form-control-file"></td>
                     <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                </tr>
+                 </tr>
             `;
             $('#team-table-' + lang + ' tbody').append(row);
         }
-
         function addFaqRow(lang) {
             var index = $('#faq-table-' + lang + ' tbody tr').length;
             var row = `
-                <tr>
+                 <tr>
                     <td><input type="text" name="${lang}[faq_items][${index}][question]" class="form-control"></td>
                     <td><textarea name="${lang}[faq_items][${index}][answer]" class="form-control"></textarea></td>
                     <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                </tr>
+                 </tr>
             `;
             $('#faq-table-' + lang + ' tbody').append(row);
         }
-
         function addPortfolioRow(lang) {
             var index = $('#portfolio-table-' + lang + ' tbody tr').length;
             var row = `
-                <tr>
+                 <tr>
                     <td><input type="text" name="${lang}[items][${index}][title]" class="form-control"></td>
                     <td><textarea name="${lang}[items][${index}][description]" class="form-control"></textarea></td>
                     <td><input type="text" name="${lang}[items][${index}][link]" class="form-control"></td>
                     <td><input type="file" name="${lang}[items][${index}][image]" class="form-control-file"></td>
                     <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                </tr>
+                 </tr>
             `;
             $('#portfolio-table-' + lang + ' tbody').append(row);
         }
-
         function addPricingRow(lang) {
             var index = $('#pricing-table-' + lang + ' tbody tr').length;
             var row = `
-                <tr>
+                 <tr>
                     <td><input type="text" name="${lang}[plans][${index}][name]" class="form-control"></td>
                     <td><input type="text" name="${lang}[plans][${index}][price]" class="form-control" placeholder="e.g., $19/month"></td>
                     <td><input type="text" name="${lang}[plans][${index}][features]" class="form-control" placeholder="Feature1, Feature2, ..."></td>
                     <td><input type="text" name="${lang}[plans][${index}][button_text]" class="form-control"></td>
                     <td><input type="text" name="${lang}[plans][${index}][button_url]" class="form-control"></td>
                     <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                </tr>
+                 </tr>
             `;
             $('#pricing-table-' + lang + ' tbody').append(row);
         }
 
-        // Свързване на бутоните за добавяне
-        $('.add-feature').click(function() {
-            addFeatureRow($(this).data('lang'));
-        });
-        $('.add-testimonial').click(function() {
-            addTestimonialRow($(this).data('lang'));
-        });
-        $('.add-step').click(function() {
-            addStepRow($(this).data('lang'));
-        });
-        $('.add-team').click(function() {
-            addTeamRow($(this).data('lang'));
-        });
-        $('.add-faq').click(function() {
-            addFaqRow($(this).data('lang'));
-        });
-        $('.add-portfolio').click(function() {
-            addPortfolioRow($(this).data('lang'));
-        });
-        $('.add-pricing').click(function() {
-            addPricingRow($(this).data('lang'));
-        });
+        $('.add-feature').click(function() { addFeatureRow($(this).data('lang')); });
+        $('.add-testimonial').click(function() { addTestimonialRow($(this).data('lang')); });
+        $('.add-step').click(function() { addStepRow($(this).data('lang')); });
+        $('.add-team').click(function() { addTeamRow($(this).data('lang')); });
+        $('.add-faq').click(function() { addFaqRow($(this).data('lang')); });
+        $('.add-portfolio').click(function() { addPortfolioRow($(this).data('lang')); });
+        $('.add-pricing').click(function() { addPricingRow($(this).data('lang')); });
 
-        // Изтриване на ред
-        $(document).on('click', '.remove-row', function() {
-            $(this).closest('tr').remove();
-        });
+        $(document).on('click', '.remove-row', function() { $(this).closest('tr').remove(); });
     });
 </script>
 @stop

@@ -1,150 +1,88 @@
 @extends('adminlte::page')
 
-@section('title', 'Add Meditation Item')
+@section('title', __('meditation_builder.title.create'))
 
 @section('content_header')
-<h1>Add Item</h1>
+    <h1>{{ __('meditation_builder.header.add_item') }}</h1>
 @stop
 
 @section('content')
 
 <form method="POST" action="{{ route('admin.meditation.builder.store') }}">
+    @csrf
+    <input type="hidden" name="meditation_id" value="{{ $meditation->id }}">
 
-@csrf
+    <div class="form-group">
+        <label for="item_type">{{ __('meditation_builder.label.item_type') }}</label>
+        <select name="item_type" id="item_type" class="form-control">
+            <option value="audio">{{ __('meditation_builder.item_type.audio') }}</option>
+            <option value="brainwave">{{ __('meditation_builder.item_type.brainwave') }}</option>
+            <option value="generator">{{ __('meditation_builder.item_type.generator') }}</option>
+            <option value="silence">{{ __('meditation_builder.item_type.silence') }}</option>
+        </select>
+    </div>
 
-<input type="hidden" name="meditation_id" value="{{ $meditation->id }}">
+    <div class="form-group" id="audio_group">
+        <label for="audio_file">{{ __('meditation_builder.label.audio_file') }}</label>
+        <select name="item_id" class="form-control">
+            <option value="">{{ __('meditation_builder.label.none') }}</option>
+            @foreach($audioFiles as $audio)
+                <option value="{{ $audio->id }}">{{ $audio->name }}</option>
+            @endforeach
+        </select>
+    </div>
 
-<div class="form-group">
-<label>Item Type</label>
+    <div class="form-group" id="brainwave_group" style="display:none;">
+        <label for="brainwave_preset">{{ __('meditation_builder.label.brainwave_preset') }}</label>
+        <select name="item_id" class="form-control">
+            <option value="">{{ __('meditation_builder.label.none') }}</option>
+            @foreach($brainwaves as $bw)
+                <option value="{{ $bw->id }}">{{ $bw->name }}</option>
+            @endforeach
+        </select>
+    </div>
 
-<select name="item_type" id="item_type" class="form-control">
+    <div class="form-group">
+        <label for="start_time">{{ __('meditation_builder.label.start_time') }}</label>
+        <input type="number" name="start_time" class="form-control" value="0">
+    </div>
 
-<option value="audio">Audio</option>
-<option value="brainwave">Brainwave</option>
-<option value="generator">Generator</option>
-<option value="silence">Silence</option>
+    <div class="form-group">
+        <label for="duration">{{ __('meditation_builder.label.duration') }}</label>
+        <input type="number" name="duration" class="form-control">
+    </div>
 
-</select>
+    <div class="form-group">
+        <label for="volume">{{ __('meditation_builder.label.volume') }}</label>
+        <input type="number" name="volume" class="form-control" value="100">
+    </div>
 
-</div>
-
-
-<div class="form-group" id="audio_group">
-
-<label>Audio File</label>
-
-<select name="item_id" class="form-control">
-
-<option value="">None</option>
-
-@foreach($audioFiles as $audio)
-
-<option value="{{ $audio->id }}">
-{{ $audio->name }}
-</option>
-
-@endforeach
-
-</select>
-
-</div>
-
-
-<div class="form-group" id="brainwave_group" style="display:none;">
-
-<label>Brainwave Preset</label>
-
-<select name="item_id" class="form-control">
-
-<option value="">None</option>
-
-@foreach($brainwaves as $bw)
-
-<option value="{{ $bw->id }}">
-{{ $bw->name }}
-</option>
-
-@endforeach
-
-</select>
-
-</div>
-
-
-<div class="form-group">
-
-<label>Start Time (seconds)</label>
-
-<input type="number"
-name="start_time"
-class="form-control"
-value="0">
-
-</div>
-
-
-<div class="form-group">
-
-<label>Duration (seconds)</label>
-
-<input type="number"
-name="duration"
-class="form-control">
-
-</div>
-
-
-<div class="form-group">
-
-<label>Volume</label>
-
-<input type="number"
-name="volume"
-class="form-control"
-value="100">
-
-</div>
-
-
-<button class="btn btn-success">
-Save
-</button>
-
+    <button class="btn btn-success">{{ __('meditation_builder.button.save') }}</button>
 </form>
 
-
 <script>
+    document.addEventListener("DOMContentLoaded", function(){
+        const typeSelect = document.getElementById("item_type");
+        const audioGroup = document.getElementById("audio_group");
+        const brainwaveGroup = document.getElementById("brainwave_group");
 
-document.addEventListener("DOMContentLoaded", function(){
-
-    const typeSelect = document.getElementById("item_type");
-    const audioGroup = document.getElementById("audio_group");
-    const brainwaveGroup = document.getElementById("brainwave_group");
-
-    function updateForm()
-    {
-        const type = typeSelect.value;
-
-        audioGroup.style.display = "none";
-        brainwaveGroup.style.display = "none";
-
-        if(type === "audio")
+        function updateForm()
         {
-            audioGroup.style.display = "block";
+            const type = typeSelect.value;
+            audioGroup.style.display = "none";
+            brainwaveGroup.style.display = "none";
+
+            if(type === "audio") {
+                audioGroup.style.display = "block";
+            }
+            if(type === "brainwave") {
+                brainwaveGroup.style.display = "block";
+            }
         }
 
-        if(type === "brainwave")
-        {
-            brainwaveGroup.style.display = "block";
-        }
-    }
-
-    typeSelect.addEventListener("change", updateForm);
-
-    updateForm();
-
-});
-
+        typeSelect.addEventListener("change", updateForm);
+        updateForm();
+    });
 </script>
 
 @stop

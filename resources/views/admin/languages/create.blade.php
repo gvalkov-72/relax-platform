@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Create Language')
+@section('title', __('languages.create'))
 
 @section('content_header')
-    <h1>Create Language</h1>
+    <h1>{{ __('languages.create') }}</h1>
 @stop
 
 @section('content')
@@ -13,22 +13,22 @@
                 @csrf
 
                 <div class="form-group">
-                    <label for="name">Language Name *</label>
+                    <label for="name">{{ __('languages.label.name') }}</label>
                     <input type="text" name="name" id="name"
                            class="form-control @error('name') is-invalid @enderror"
                            value="{{ old('name') }}" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="code">Language Code *</label>
+                    <label for="code">{{ __('languages.label.code') }}</label>
                     <input type="text" name="code" id="code"
                            class="form-control @error('code') is-invalid @enderror"
                            value="{{ old('code') }}" required
-                           placeholder="bg, en, de">
+                           placeholder="{{ __('languages.label.code_placeholder') }}">
                 </div>
 
                 <div class="form-group">
-                    <label for="sort_order">Sort Order</label>
+                    <label for="sort_order">{{ __('languages.label.sort_order') }}</label>
                     <input type="number" name="sort_order" id="sort_order"
                            class="form-control" value="{{ old('sort_order', 0) }}">
                 </div>
@@ -38,7 +38,7 @@
                            class="form-check-input" value="1"
                            {{ old('is_default') ? 'checked' : '' }}>
                     <label class="form-check-label" for="is_default">
-                        Set as default language
+                        {{ __('languages.label.is_default') }}
                     </label>
                 </div>
 
@@ -47,15 +47,15 @@
                            class="form-check-input" value="1"
                            {{ old('is_active', 1) ? 'checked' : '' }}>
                     <label class="form-check-label" for="is_active">
-                        Active
+                        {{ __('languages.label.is_active') }}
                     </label>
                 </div>
 
                 <button type="submit" class="btn btn-success">
-                    <i class="fas fa-save"></i> Create
+                    <i class="fas fa-save"></i> {{ __('languages.button.create') }}
                 </button>
                 <a href="{{ route('admin.languages.index') }}" class="btn btn-secondary">
-                    Cancel
+                    {{ __('languages.button.cancel') }}
                 </a>
             </form>
         </div>

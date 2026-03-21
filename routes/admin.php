@@ -12,7 +12,12 @@ use App\Http\Controllers\Admin\MeditationController;
 use App\Http\Controllers\Admin\AudioFileController;
 use App\Http\Controllers\Admin\BrainwavePresetController;
 use App\Http\Controllers\Admin\MeditationBuilderController;
+use App\Http\Controllers\Admin\ContentController;
+use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\RagChatController;
+
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,8 +25,47 @@ use App\Http\Controllers\RagChatController;
 |--------------------------------------------------------------------------
 */
 Route::get('/dashboard', function () {
-    return view('admin.dashboard');
+    $usersCount = User::count();
+
+    $onlineThreshold = now()->subMinutes(2)->timestamp;
+    $onlineUserIds = DB::table('sessions')
+        ->where('last_activity', '>=', $onlineThreshold)
+        ->whereNotNull('user_id')
+        ->distinct()
+        ->pluck('user_id');
+
+    $onlineUsersCount = $onlineUserIds->count();
+    $onlineUsers = User::whereIn('id', $onlineUserIds)
+        ->select('id', 'name', 'email')
+        ->get();
+
+    return view('admin.dashboard', compact('usersCount', 'onlineUsersCount', 'onlineUsers'));
 })->name('admin.dashboard');
+
+
+/*
+|--------------------------------------------------------------------------
+| ONLINE USERS API (за AJAX polling)
+|--------------------------------------------------------------------------
+*/
+Route::get('/online-users', function () {
+    $onlineThreshold = now()->subMinutes(2)->timestamp;
+    $onlineUserIds = DB::table('sessions')
+        ->where('last_activity', '>=', $onlineThreshold)
+        ->whereNotNull('user_id')
+        ->distinct()
+        ->pluck('user_id');
+
+    $onlineUsersCount = $onlineUserIds->count();
+    $onlineUsers = User::whereIn('id', $onlineUserIds)
+        ->select('id', 'name', 'email')
+        ->get();
+
+    return response()->json([
+        'count' => $onlineUsersCount,
+        'users' => $onlineUsers,
+    ]);
+})->name('admin.online-users')->middleware('auth');
 
 
 /*
@@ -30,8 +74,8 @@ Route::get('/dashboard', function () {
 |--------------------------------------------------------------------------
 */
 Route::resource('users', UserController::class)
-    ->names('admin.users');
-
+    ->names('admin.users')
+    ->middleware('can:manage users');
 
 /*
 |--------------------------------------------------------------------------
@@ -39,8 +83,8 @@ Route::resource('users', UserController::class)
 |--------------------------------------------------------------------------
 */
 Route::resource('roles', RoleController::class)
-    ->names('admin.roles');
-
+    ->names('admin.roles')
+    ->middleware('can:manage roles');
 
 /*
 |--------------------------------------------------------------------------
@@ -48,7 +92,8 @@ Route::resource('roles', RoleController::class)
 |--------------------------------------------------------------------------
 */
 Route::resource('permissions', PermissionController::class)
-    ->names('admin.permissions');
+    ->names('admin.permissions')
+    ->middleware('can:manage permissions');
 
 /*
 |--------------------------------------------------------------------------
@@ -56,7 +101,8 @@ Route::resource('permissions', PermissionController::class)
 |--------------------------------------------------------------------------
 */
 Route::resource('languages', LanguageController::class)
-    ->names('admin.languages');
+    ->names('admin.languages')
+    ->middleware('can:manage languages');
 
 /*
 |--------------------------------------------------------------------------
@@ -64,7 +110,8 @@ Route::resource('languages', LanguageController::class)
 |--------------------------------------------------------------------------
 */
 Route::resource('pages', PageController::class)
-    ->names('admin.pages');
+    ->names('admin.pages')
+    ->middleware('can:manage pages');
 
 /*
 |--------------------------------------------------------------------------
@@ -72,7 +119,8 @@ Route::resource('pages', PageController::class)
 |--------------------------------------------------------------------------
 */
 Route::resource('sections', SectionController::class)
-    ->names('admin.sections');
+    ->names('admin.sections')
+    ->middleware('can:manage sections');
 
 /*
 |--------------------------------------------------------------------------
@@ -80,7 +128,8 @@ Route::resource('sections', SectionController::class)
 |--------------------------------------------------------------------------
 */
 Route::resource('meditations', MeditationController::class)
-    ->names('admin.meditations');
+    ->names('admin.meditations')
+    ->middleware('can:manage meditations');
 
 /*
 |--------------------------------------------------------------------------
@@ -89,7 +138,8 @@ Route::resource('meditations', MeditationController::class)
 */
 Route::resource('audio', AudioFileController::class)
     ->parameters(['audio' => 'audio'])
-    ->names('admin.audio');
+    ->names('admin.audio')
+    ->middleware('can:manage audio');
 
 /*
 |--------------------------------------------------------------------------
@@ -97,48 +147,98 @@ Route::resource('audio', AudioFileController::class)
 |--------------------------------------------------------------------------
 */
 Route::resource('brainwaves', BrainwavePresetController::class)
-    ->names('admin.brainwaves');
+    ->names('admin.brainwaves')
+    ->middleware('can:manage brainwaves');
 
 /*
 |--------------------------------------------------------------------------
 | MEDITATION BUILDER
 |--------------------------------------------------------------------------
 */
+Route::get('meditations/{id}/builder', [MeditationBuilderController::class, 'index'])
+    ->name('admin.meditation.builder')
+    ->middleware('can:manage meditations');
 
-Route::get(
-    'meditations/{id}/builder',
-    [MeditationBuilderController::class, 'index']
-)->name('admin.meditation.builder');
+Route::get('meditations/{id}/builder/create', [MeditationBuilderController::class, 'create'])
+    ->name('admin.meditation.builder.create')
+    ->middleware('can:manage meditations');
 
-Route::get(
-    'meditations/{id}/builder/create',
-    [MeditationBuilderController::class, 'create']
-)->name('admin.meditation.builder.create');
+Route::post('meditation-builder/store', [MeditationBuilderController::class, 'store'])
+    ->name('admin.meditation.builder.store')
+    ->middleware('can:manage meditations');
 
-Route::post(
-    'meditation-builder/store',
-    [MeditationBuilderController::class, 'store']
-)->name('admin.meditation.builder.store');
+Route::delete('meditation-builder/{id}', [MeditationBuilderController::class, 'destroy'])
+    ->name('admin.meditation.builder.destroy')
+    ->middleware('can:manage meditations');
 
-Route::delete(
-    'meditation-builder/{id}',
-    [MeditationBuilderController::class, 'destroy']
-)->name('admin.meditation.builder.destroy');
+Route::post('meditation-builder/update-position', [MeditationBuilderController::class, 'updatePosition'])
+    ->name('admin.meditation.builder.updatePosition')
+    ->middleware('can:manage meditations');
 
-Route::post(
-    'meditation-builder/update-position',
-    [MeditationBuilderController::class, 'updatePosition']
-)->name('admin.meditation.builder.updatePosition');
+/*
+|--------------------------------------------------------------------------
+| CONTENTS (Идеи и документи)
+|--------------------------------------------------------------------------
+*/
+Route::resource('contents', ContentController::class)
+    ->names('admin.contents')
+    ->middleware('can:manage contents');
+
+Route::delete('contents/attachments/{attachment}', [ContentController::class, 'deleteAttachment'])
+    ->name('admin.contents.deleteAttachment')
+    ->middleware('can:manage contents');
+
+Route::get('contents/{content}', [ContentController::class, 'show'])
+    ->name('admin.contents.show')
+    ->middleware('can:manage contents');
+
+Route::get('contents/download/{attachment}', [ContentController::class, 'download'])
+    ->name('admin.contents.download')
+    ->middleware('can:manage contents');
+
+/*
+|--------------------------------------------------------------------------
+| TAGS (Тагове)
+|--------------------------------------------------------------------------
+*/
+Route::resource('tags', TagController::class)
+    ->names('admin.tags')
+    ->middleware('can:manage tags');
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN LANGUAGE SWITCHER
+|--------------------------------------------------------------------------
+*/
+Route::get('/language/{lang}', function ($lang) {
+    if (!in_array($lang, ['bg', 'en'])) {
+        abort(404);
+    }
+    session(['admin_locale' => $lang]);
+    return redirect()->back();
+})->name('admin.language.switch');
 
 /*
 |--------------------------------------------------------------------------
 | AI ASSISTANT
 |--------------------------------------------------------------------------
 */
+Route::get('/ai-assistant', [RagChatController::class, 'index'])
+    ->name('admin.ai.assistant')
+    ->middleware('can:manage ai');
 
-Route::get('/ai-assistant', [RagChatController::class, 'index'])->name('admin.ai.assistant');
-Route::post('/ai/ask', [RagChatController::class, 'ask'])->name('ai.ask');
-Route::post('/ai/generate-page', [RagChatController::class, 'generatePage'])->name('ai.generate.page');
-Route::post('/ai/generate-section', [RagChatController::class, 'generateSection'])->name('ai.generate.section');
-Route::post('/ai/reindex', [RagChatController::class, 'reindex'])->name('ai.reindex');
-    
+Route::post('/ai/ask', [RagChatController::class, 'ask'])
+    ->name('ai.ask')
+    ->middleware('can:manage ai');
+
+Route::post('/ai/generate-page', [RagChatController::class, 'generatePage'])
+    ->name('ai.generate.page')
+    ->middleware('can:manage ai');
+
+Route::post('/ai/generate-section', [RagChatController::class, 'generateSection'])
+    ->name('ai.generate.section')
+    ->middleware('can:manage ai');
+
+Route::post('/ai/reindex', [RagChatController::class, 'reindex'])
+    ->name('ai.reindex')
+    ->middleware('can:manage ai');

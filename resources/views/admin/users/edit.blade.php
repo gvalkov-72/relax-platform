@@ -1,39 +1,43 @@
 @extends('adminlte::page')
 
+@section('title', __('users.title.edit'))
+
+@section('content_header')
+    <h1>{{ __('users.title.edit') }}</h1>
+@stop
+
 @section('content')
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" action="{{ route('admin.users.update', $user) }}">
+                @csrf
+                @method('PUT')
 
-<form method="POST" action="{{ route('admin.users.update',$user) }}">
+                <div class="form-group">
+                    <label for="name">{{ __('users.label.name') }}</label>
+                    <input type="text" name="name" id="name" class="form-control" value="{{ $user->name }}" required>
+                </div>
 
-@csrf
-@method('PUT')
+                <div class="form-group">
+                    <label for="email">{{ __('users.label.email') }}</label>
+                    <input type="email" name="email" id="email" class="form-control" value="{{ $user->email }}" required>
+                </div>
 
-<input type="text" name="name"
-value="{{ $user->name }}"
-class="form-control mb-2">
+                <div class="form-group">
+                    <label for="role">{{ __('users.label.role') }}</label>
+                    <select name="role" id="role" class="form-control">
+                        @foreach($roles as $role)
+                            <option value="{{ $role->name }}" {{ $user->hasRole($role->name) ? 'selected' : '' }}>
+                                {{ $role->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-<input type="email" name="email"
-value="{{ $user->email }}"
-class="form-control mb-2">
-
-<select name="role" class="form-control">
-
-@foreach($roles as $role)
-
-<option
-value="{{ $role->name }}"
-@if($user->hasRole($role->name)) selected @endif
->
-{{ $role->name }}
-</option>
-
-@endforeach
-
-</select>
-
-<button class="btn btn-success mt-3">
-Update
-</button>
-
-</form>
-
-@endsection
+                <button type="submit" class="btn btn-success mt-3">
+                    <i class="fas fa-save"></i> {{ __('users.button.update') }}
+                </button>
+            </form>
+        </div>
+    </div>
+@stop

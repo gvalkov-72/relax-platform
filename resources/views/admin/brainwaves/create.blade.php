@@ -1,101 +1,51 @@
 @extends('adminlte::page')
 
-@section('title','Create Brainwave Preset')
+@section('title', __('brainwaves.title.create'))
 
 @section('content_header')
-<h1>Create Brainwave Preset</h1>
+    <h1>{{ __('brainwaves.title.create') }}</h1>
 @stop
 
 @section('content')
 
-<form method="POST"
-action="{{ route('admin.brainwaves.store') }}">
+<form method="POST" action="{{ route('admin.brainwaves.store') }}">
+    @csrf
 
-@csrf
+    <div class="card">
+        <div class="card-body">
+            <div class="form-group">
+                <label>{{ __('brainwaves.label.name') }}</label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
 
-<div class="card">
+            <div class="form-group">
+                <label>{{ __('brainwaves.label.base_frequency') }}</label>
+                <input type="number" step="0.1" name="base_frequency" class="form-control" value="200" required>
+            </div>
 
-<div class="card-body">
+            <div class="form-group">
+                <label>{{ __('brainwaves.label.beat_frequency') }}</label>
+                <input type="number" step="0.1" name="beat_frequency" class="form-control" required>
+            </div>
 
-<div class="form-group">
+            <div class="form-group">
+                <label>{{ __('brainwaves.label.duration') }}</label>
+                <input type="number" name="duration" class="form-control" value="600" required>
+            </div>
 
-<label>Name</label>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="is_active" checked>
+                    {{ __('brainwaves.label.active') }}
+                </label>
+            </div>
+        </div>
 
-<input type="text"
-name="name"
-class="form-control"
-required>
-
-</div>
-
-<div class="form-group">
-
-<label>Base Frequency (Hz)</label>
-
-<input type="number"
-step="0.1"
-name="base_frequency"
-class="form-control"
-value="200"
-required>
-
-</div>
-
-<div class="form-group">
-
-<label>Beat Frequency (Hz)</label>
-
-<input type="number"
-step="0.1"
-name="beat_frequency"
-class="form-control"
-required>
-
-</div>
-
-<div class="form-group">
-
-<label>Duration (seconds)</label>
-
-<input type="number"
-name="duration"
-class="form-control"
-value="600"
-required>
-
-</div>
-
-<div class="form-group">
-
-<label>
-
-<input type="checkbox"
-name="is_active"
-checked>
-
-Active
-
-</label>
-
-</div>
-
-</div>
-
-<div class="card-footer">
-
-<button class="btn btn-success">
-Create
-</button>
-
-<a href="{{ route('admin.brainwaves.index') }}"
-class="btn btn-secondary">
-Back
-</a>
-
-</div>
-
-</div>
-
+        <div class="card-footer">
+            <button class="btn btn-success">{{ __('brainwaves.button.create') }}</button>
+            <a href="{{ route('admin.brainwaves.index') }}" class="btn btn-secondary">{{ __('brainwaves.button.back') }}</a>
+        </div>
+    </div>
 </form>
 
 @stop

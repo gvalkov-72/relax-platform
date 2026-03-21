@@ -1,14 +1,14 @@
 @extends('adminlte::page')
 
-@section('title', 'Pages')
+@section('title', __('pages.title.index'))
 
 @section('content_header')
-    <h1>Pages</h1>
+    <h1>{{ __('pages.title.index') }}</h1>
 @stop
 
 @section('content')
     <a href="{{ route('admin.pages.create') }}" class="btn btn-primary mb-3">
-        <i class="fas fa-plus"></i> Create Page
+        <i class="fas fa-plus"></i> {{ __('pages.button.create') }}
     </a>
 
     @if(session('success'))
@@ -20,13 +20,13 @@
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Title (BG)</th>
-                        <th>Slug</th>
-                        <th>Template</th>
-                        <th>Active</th>
-                        <th>In Menu</th>
-                        <th width="150">Actions</th>
+                        <th>{{ __('pages.table.id') }}</th>
+                        <th>{{ __('pages.table.title') }}</th>
+                        <th>{{ __('pages.table.slug') }}</th>
+                        <th>{{ __('pages.table.template') }}</th>
+                        <th>{{ __('pages.table.active') }}</th>
+                        <th>{{ __('pages.table.in_menu') }}</th>
+                        <th width="150">{{ __('pages.table.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,38 +34,38 @@
                         @php
                             $bgTranslation = $page->translations->where('language_id', 1)->first(); // ако bg е с id=1
                         @endphp
-                        <tr>
-                            <td>{{ $page->id }}</td>
-                            <td>{{ $bgTranslation->title ?? 'No title' }}</td>
-                            <td>{{ $bgTranslation->slug ?? '-' }}</td>
-                            <td>{{ $page->template }}</td>
-                            <td>
+                         <tr>
+                             <td>{{ $page->id }}</td>
+                             <td>{{ $bgTranslation->title ?? __('pages.status.no') }}</td>
+                             <td>{{ $bgTranslation->slug ?? '-' }}</td>
+                             <td>{{ __('pages.template.' . $page->template) }}</td>
+                             <td>
                                 @if($page->is_active)
-                                    <span class="badge badge-success">Yes</span>
+                                    <span class="badge badge-success">{{ __('pages.status.yes') }}</span>
                                 @else
-                                    <span class="badge badge-danger">No</span>
+                                    <span class="badge badge-danger">{{ __('pages.status.no') }}</span>
                                 @endif
-                            </td>
-                            <td>
+                             </td>
+                             <td>
                                 @if($page->show_in_menu)
-                                    <span class="badge badge-success">Yes</span>
+                                    <span class="badge badge-success">{{ __('pages.status.yes') }}</span>
                                 @else
-                                    <span class="badge badge-secondary">No</span>
+                                    <span class="badge badge-secondary">{{ __('pages.status.no') }}</span>
                                 @endif
-                            </td>
-                            <td>
+                             </td>
+                             <td>
                                 <a href="{{ route('admin.pages.edit', $page->id) }}" class="btn btn-warning btn-sm">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit"></i> {{ __('pages.button.edit') }}
                                 </a>
                                 <form method="POST" action="{{ route('admin.pages.destroy', $page->id) }}" style="display:inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="btn btn-danger btn-sm" onclick="return confirm('Delete this page?')">
-                                        <i class="fas fa-trash"></i> Delete
+                                    <button class="btn btn-danger btn-sm" onclick="return confirm('{{ __('pages.confirm.delete') }}')">
+                                        <i class="fas fa-trash"></i> {{ __('pages.button.delete') }}
                                     </button>
                                 </form>
-                            </td>
-                        </tr>
+                             </td>
+                         </tr>
                     @endforeach
                 </tbody>
             </table>

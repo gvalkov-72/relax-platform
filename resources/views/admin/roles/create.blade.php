@@ -1,36 +1,38 @@
 @extends('adminlte::page')
 
+@section('title', __('roles.title.create'))
+
+@section('content_header')
+    <h1>{{ __('roles.title.create') }}</h1>
+@stop
+
 @section('content')
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" action="{{ route('admin.roles.store') }}">
+                @csrf
 
-<form method="POST" action="{{ route('admin.roles.store') }}">
+                <div class="form-group">
+                    <label for="name">{{ __('roles.label.name') }}</label>
+                    <input type="text" name="name" id="name" class="form-control" placeholder="{{ __('roles.label.name') }}" required>
+                </div>
 
-@csrf
+                <div class="form-group">
+                    <label>{{ __('roles.label.permissions') }}</label>
+                    @foreach($permissions as $permission)
+                        <div class="form-check">
+                            <input type="checkbox" name="permissions[]" value="{{ $permission->name }}" id="perm-{{ $permission->id }}" class="form-check-input">
+                            <label class="form-check-label" for="perm-{{ $permission->id }}">
+                                {{ $permission->name }}
+                            </label>
+                        </div>
+                    @endforeach
+                </div>
 
-<input type="text"
-name="name"
-placeholder="Role name"
-class="form-control mb-3">
-
-<label>Permissions</label>
-
-@foreach($permissions as $permission)
-
-<div>
-
-<input type="checkbox"
-name="permissions[]"
-value="{{ $permission->name }}">
-
-{{ $permission->name }}
-
-</div>
-
-@endforeach
-
-<button class="btn btn-success mt-3">
-Save
-</button>
-
-</form>
-
-@endsection
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> {{ __('roles.button.save') }}
+                </button>
+            </form>
+        </div>
+    </div>
+@stop
