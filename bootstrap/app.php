@@ -24,8 +24,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+
             'setLanguage' => \App\Http\Middleware\SetLanguage::class,
-            'admin.locale' => \App\Http\Middleware\SetAdminLocale::class, // <-- добавен ред
+            'admin.locale' => \App\Http\Middleware\SetAdminLocale::class,
         ]);
 
         /*
@@ -36,12 +37,12 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->group('admin', [
             'auth',
-            'role:admin'
+            'role:admin',
         ]);
     })
 
     ->withProviders([
-        App\Providers\AuthServiceProvider::class, // 👈 ТОВА ДОБАВЯШ
+        App\Providers\AuthServiceProvider::class,
     ])
 
     ->withExceptions(function (Exceptions $exceptions): void {
