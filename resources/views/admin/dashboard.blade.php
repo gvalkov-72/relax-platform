@@ -8,68 +8,102 @@
 
 @section('content')
 <div class="row">
+    <!-- Total Users -->
     <div class="col-lg-3 col-6">
         <div class="small-box bg-info">
             <div class="inner">
-                <h3>{{ $usersCount ?? 0 }}</h3>
+                <h3>{{ $totalUsers }}</h3>
                 <p>{{ __('dashboard.users') }}</p>
             </div>
             <div class="icon">
                 <i class="fas fa-users"></i>
             </div>
-            <a href="{{ route('admin.users.index') }}" class="small-box-footer">{{ __('dashboard.more_info') }} <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="{{ route('admin.users.index') }}" class="small-box-footer">
+                {{ __('dashboard.more_info') }} <i class="fas fa-arrow-circle-right"></i>
+            </a>
         </div>
     </div>
 
+    <!-- Online Users -->
     <div class="col-lg-3 col-6">
-        <div class="small-box bg-success" id="online-users-box">
+        <div class="small-box bg-success">
             <div class="inner">
-                <h3 id="online-users-count">{{ $onlineUsersCount ?? 0 }}</h3>
+                <h3 id="online-users-count">{{ $onlineUsersCount }}</h3>
                 <p>{{ __('dashboard.online_users') }}</p>
             </div>
             <div class="icon">
                 <i class="fas fa-user-check"></i>
             </div>
+            <a href="#" class="small-box-footer" data-toggle="modal" data-target="#onlineUsersModal">
+                {{ __('dashboard.online_users_list') }} <i class="fas fa-arrow-circle-right"></i>
+            </a>
         </div>
     </div>
 </div>
 
+<!-- Chart + Statistics -->
 <div class="row">
-    <div class="col-12">
+    <div class="col-md-7">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">{{ __('dashboard.online_users_list') }}</h3>
-                <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                </div>
+                <h3 class="card-title">{{ __('dashboard.active_users_last_7_days') }}</h3>
             </div>
-            <div class="card-body collapse show" id="online-users-list">
-                <table class="table table-striped" id="online-users-table">
-                    <thead>
-                          <tr>
-                            <th>ID</th>
-                            <th>{{ __('dashboard.name') }}</th>
-                            <th>{{ __('dashboard.email') }}</th>
-                          </tr>
-                    </thead>
-                    <tbody>
-                        @if($onlineUsers->count())
-                            @foreach($onlineUsers as $user)
-                                <tr>
-                                    <td>{{ $user->id }}</td>
-                                    <td>{{ $user->name }}</td>
-                                    <td>{{ $user->email }}</td>
-                                </tr>
-                            @endforeach
-                        @else
-                            <tr id="no-online-row">
-                                <td colspan="3" class="text-muted">{{ __('dashboard.no_online_users') }}</td>
-                            </tr>
-                        @endif
-                    </tbody>
-                </table>
+            <div class="card-body">
+                <canvas id="activityChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">{{ __('dashboard.session_statistics') }}</h3>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ __('dashboard.total_sessions') }}
+                        <span class="badge badge-primary badge-pill">{{ $totalSessions }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ __('dashboard.avg_duration') }}
+                        <span class="badge badge-primary badge-pill">{{ round($avgDuration) }} min</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ __('dashboard.top_session_type') }}
+                        <span class="badge badge-primary badge-pill">{{ $topSessionType }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal with online users list -->
+<div class="modal fade" id="onlineUsersModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ __('dashboard.online_users_list') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="online-users-list">
+                @if($onlineUsersCount > 0)
+                    <ul class="list-group">
+                        @foreach($onlineUsers as $user)
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ $user->name }} ({{ $user->email }})
+                                <span class="badge badge-primary badge-pill">
+                                    {{ \Carbon\Carbon::parse($user->last_activity)->diffForHumans() }}
+                                </span>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p>{{ __('dashboard.no_online_users') }}</p>
+                @endif
             </div>
         </div>
     </div>
@@ -77,51 +111,60 @@
 @stop
 
 @section('js')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Функция за обновяване на списъка с онлайн потребители
-    function refreshOnlineUsers() {
-        fetch('{{ route("admin.online-users") }}', {
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
+    // Chart data from PHP
+    const chartLabels = {!! json_encode($chartLabels) !!};
+    const chartData = {!! json_encode($chartData) !!};
+
+    const ctx = document.getElementById('activityChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                label: '{{ __("dashboard.active_users") }}',
+                data: chartData,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    stepSize: 1
+                }
             }
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Обновяване на броя
-            document.getElementById('online-users-count').innerText = data.count;
+        }
+    });
 
-            // Обновяване на таблицата
-            const tableBody = document.querySelector('#online-users-table tbody');
-            if (!tableBody) return;
+    // Auto-refresh online users every 30 seconds
+    setInterval(() => {
+        fetch('{{ route("admin.online-users") }}')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('online-users-count').textContent = data.count;
 
-            // Изтриваме съществуващите редове
-            tableBody.innerHTML = '';
-
-            if (data.users.length > 0) {
-                data.users.forEach(user => {
-                    const row = tableBody.insertRow();
-                    row.insertCell(0).innerText = user.id;
-                    row.insertCell(1).innerText = user.name;
-                    row.insertCell(2).innerText = user.email;
-                });
-            } else {
-                const row = tableBody.insertRow();
-                row.id = 'no-online-row';
-                const cell = row.insertCell(0);
-                cell.colSpan = 3;
-                cell.className = 'text-muted';
-                cell.innerText = '{{ __('dashboard.no_online_users') }}';
-            }
-        })
-        .catch(error => console.error('Грешка при обновяване на онлайн потребителите:', error));
-    }
-
-    // Първоначално зареждане (не е задължително, защото данните са вече в HTML)
-    // Но можем да извикаме refresh след 1 секунда, за да синхронизираме
-    setTimeout(refreshOnlineUsers, 1000);
-
-    // Автоматично обновяване на всеки 30 секунди
-    setInterval(refreshOnlineUsers, 30000);
+                const listContainer = document.getElementById('online-users-list');
+                if (data.count > 0) {
+                    let html = '<ul class="list-group">';
+                    data.users.forEach(user => {
+                        html += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                                    ${user.name} (${user.email})
+                                    <span class="badge badge-primary badge-pill">just now</span>
+                                 </li>`;
+                    });
+                    html += '</ul>';
+                    listContainer.innerHTML = html;
+                } else {
+                    listContainer.innerHTML = '<p>{{ __("dashboard.no_online_users") }}</p>';
+                }
+            })
+            .catch(error => console.error('Error fetching online users:', error));
+    }, 30000);
 </script>
 @stop

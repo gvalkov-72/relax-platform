@@ -30,31 +30,28 @@
         <div class="card-body p-0">
             <table class="table table-hover table-striped mb-0">
                 <thead class="bg-light">
-                    <tr>
+                     <tr>
                         <th width="60">{{ __('users.table.id') }}</th>
                         <th>{{ __('users.table.name') }}</th>
                         <th>{{ __('users.table.email') }}</th>
                         <th>{{ __('users.table.role') }}</th>
-                        <th width="220" class="text-center">
-                            {{ __('users.table.actions') }}
-                        </th>
-                    </tr>
+                        <th>{{ __('users.fields.status') }}</th>
+                        <th>{{ __('users.fields.last_activity') }}</th>
+                        <th width="220" class="text-center">{{ __('users.table.actions') }}</th>
+                     </tr>
                 </thead>
 
                 <tbody>
                     @forelse ($users as $user)
-                        <tr>
+                         <tr>
                             <td class="align-middle">{{ $user->id }}</td>
-
                             <td class="align-middle">
                                 <strong>{{ $user->name }}</strong>
                             </td>
-
                             <td class="align-middle">
                                 <i class="fas fa-envelope text-muted"></i>
                                 {{ $user->email }}
                             </td>
-
                             <td class="align-middle">
                                 @foreach ($user->roles as $role)
                                     <span class="badge badge-info">
@@ -62,7 +59,16 @@
                                     </span>
                                 @endforeach
                             </td>
-
+                            <td class="align-middle">
+                                @if($user->isOnline())
+                                    <span class="badge badge-success"><i class="fas fa-circle"></i> {{ __('users.status.online') }}</span>
+                                @else
+                                    <span class="badge badge-secondary">{{ __('users.status.offline') }}</span>
+                                @endif
+                            </td>
+                            <td class="align-middle">
+                                {{ $user->getLastActivityForHumans() }}
+                            </td>
                             <td class="align-middle text-center">
 
                                 {{-- VIEW --}}
@@ -94,14 +100,14 @@
                                 </form>
 
                             </td>
-                        </tr>
+                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="5" class="text-center p-4 text-muted">
+                         <tr>
+                            <td colspan="7" class="text-center p-4 text-muted">
                                 <i class="fas fa-users-slash fa-2x mb-2"></i><br>
                                 {{ __('users.messages.empty') }}
                             </td>
-                        </tr>
+                         </tr>
                     @endforelse
                 </tbody>
             </table>

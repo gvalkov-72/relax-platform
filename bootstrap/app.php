@@ -19,7 +19,6 @@ return Application::configure(basePath: dirname(__DIR__))
         | Middleware aliases
         |--------------------------------------------------------------------------
         */
-
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
@@ -31,14 +30,17 @@ return Application::configure(basePath: dirname(__DIR__))
 
         /*
         |--------------------------------------------------------------------------
-        | Admin middleware group
+        | Admin middleware group – сега включва и UpdateLastActivity
         |--------------------------------------------------------------------------
         */
-
         $middleware->group('admin', [
             'auth',
+            \App\Http\Middleware\UpdateLastActivity::class,
             'role:admin',
         ]);
+
+        // ❌ Премахваме глобалния ред:
+        // $middleware->append(\App\Http\Middleware\UpdateLastActivity::class);
     })
 
     ->withProviders([

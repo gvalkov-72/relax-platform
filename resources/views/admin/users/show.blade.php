@@ -26,6 +26,26 @@
 
                 <hr>
 
+                {{-- Status --}}
+                <strong><i class="fas fa-user-clock mr-1"></i> {{ __('users.fields.status') }}</strong>
+                <p class="text-muted">
+                    @if($user->isOnline())
+                        <span class="badge badge-success">{{ __('users.status.online') }}</span>
+                    @else
+                        <span class="badge badge-secondary">{{ __('users.status.offline') }}</span>
+                    @endif
+                </p>
+
+                <hr>
+
+                {{-- Last activity --}}
+                <strong><i class="fas fa-history mr-1"></i> {{ __('users.fields.last_activity') }}</strong>
+                <p class="text-muted">
+                    {{ $user->getLastActivityForHumans() }}
+                </p>
+
+                <hr>
+
                 {{-- Roles --}}
                 <strong><i class="fas fa-user-tag mr-1"></i> {{ __('users.label.role') }}</strong>
                 <p class="text-muted">
@@ -89,26 +109,24 @@
                     <div class="col-sm-8">{{ $user->updated_at?->format('d.m.Y H:i') }}</div>
                 </div>
 
+                @if($stats)
                 <hr>
 
-                {{-- LAST LOGIN --}}
-                @php
-                    $lastSession = DB::table('sessions')
-                        ->where('user_id', $user->id)
-                        ->orderByDesc('last_activity')
-                        ->first();
-                @endphp
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>{{ __('users.fields.total_sessions') }}</strong></div>
+                    <div class="col-sm-8">{{ $stats->total_sessions }}</div>
+                </div>
 
                 <div class="row mb-3">
-                    <div class="col-sm-4"><strong>{{ __('users.label.last_activity') }}</strong></div>
-                    <div class="col-sm-8">
-                        @if($lastSession)
-                            {{ \Carbon\Carbon::createFromTimestamp($lastSession->last_activity)->format('d.m.Y H:i') }}
-                        @else
-                            <span class="text-muted">{{ __('users.empty.last_activity') }}</span>
-                        @endif
-                    </div>
+                    <div class="col-sm-4"><strong>{{ __('users.fields.total_duration') }}</strong></div>
+                    <div class="col-sm-8">{{ round($stats->total_duration / 60, 1) }} min</div>
                 </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>{{ __('users.fields.avg_duration') }}</strong></div>
+                    <div class="col-sm-8">{{ round($stats->avg_duration, 1) }} min</div>
+                </div>
+                @endif
 
             </div>
         </div>

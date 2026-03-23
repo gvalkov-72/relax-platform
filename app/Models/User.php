@@ -10,7 +10,6 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, HasRoles, Notifiable;
 
     /**
@@ -43,7 +42,24 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'last_activity' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Check if user is online (last activity within last 2 minutes)
+     */
+    public function isOnline(): bool
+    {
+        return $this->last_activity && $this->last_activity >= now()->subMinutes(2);
+    }
+
+    /**
+     * Get human-readable last activity
+     */
+    public function getLastActivityForHumans(): string
+    {
+        return $this->last_activity ? $this->last_activity->diffForHumans() : __('users.empty.last_activity');
     }
 }
